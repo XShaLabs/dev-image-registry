@@ -75,17 +75,17 @@ You can manually trigger the workflow execution in the GitHub Actions page.
 After the build is complete, the image will be pushed to:
 
 ```
-ghcr.io/XShaLabs/dev-image-registry/<image-name>:<tag>
+ghcr.io/xshalabs/dev-image-registry/<image-name>:<tag>
 ```
 
 For example:
 
 ```bash
 # Pull the primary tag
-docker pull ghcr.io/XShaLabs/dev-image-registry/claude-code:node-18-claude-code-1.0.67
+docker pull ghcr.io/xshalabs/dev-image-registry/claude-code:node-18-claude-code-1.0.67
 
 # Pull the latest tag (only on the main branch)
-docker pull ghcr.io/XShaLabs/dev-image-registry/claude-code:latest-node-18-claude-code-1.0.67
+docker pull ghcr.io/xshalabs/dev-image-registry/claude-code:latest-node-18-claude-code-1.0.67
 ```
 
 ## Permissions
