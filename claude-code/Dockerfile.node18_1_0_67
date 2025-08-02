@@ -6,6 +6,7 @@ WORKDIR /app
 
 RUN npm install -g pnpm @anthropic-ai/claude-code@1.0.67
 
-RUN groupadd xsha && useradd -m -g xsha xsha
+RUN groupadd -g 1001 -r xsha && \
+    useradd -u 1001 -r -m -g xsha xsha
 
 USER xsha
