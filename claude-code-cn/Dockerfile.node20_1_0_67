@@ -1,0 +1,15 @@
+FROM m.daocloud.io/docker.io/library/node:20
+
+RUN apt-get update && apt-get install -y git bash && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN npm config set registry https://registry.npmmirror.com/ && \
+    npm install -g pnpm @anthropic-ai/claude-code@1.0.67 && \
+    pnpm config set registry https://registry.npmmirror.com/
+
+RUN groupadd -g 1001 -r xsha && \
+    useradd -u 1001 -r -m -g xsha xsha && \
+    chown -R xsha:xsha /app
+
+USER xsha
