@@ -80,10 +80,6 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.image.name }}
           tags: |
             type=raw,value=${{ matrix.image.tag }}
-            type=ref,event=branch,suffix=-${{ matrix.image.tag }}
-            type=ref,event=pr,suffix=-${{ matrix.image.tag }}
-            type=sha,prefix={{branch}}-${{ matrix.image.tag }}-
-            type=raw,value=latest,enable={{is_default_branch}},suffix=-${{ matrix.image.tag }}
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

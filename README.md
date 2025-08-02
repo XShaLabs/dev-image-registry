@@ -46,9 +46,6 @@ When code is pushed to the main/master branch, GitHub Actions will:
 Each image will automatically generate the following tags:
 
 - `<tag>` (The primary tag defined in `registry.json`)
-- `<branch-name>-<tag>` (Branch name - tag)
-- `<branch-name>-<tag>-<commit-sha>` (Branch name - tag - commit hash)
-- `latest-<tag>` (Only on the default branch)
 
 ## Usage
 
