@@ -13,12 +13,12 @@ Add image information to be built in the `registry.json` file:
   "waiting": [
     {
       "name": "claude-code",
-      "tag": "node-18-claude-code-1.0.67",
+      "tag": "node18-1.0.67",
       "file": "claude-code/Dockerfile.node18_1_0_67"
     },
     {
       "name": "claude-code",
-      "tag": "node-20-claude-code-1.0.67",
+      "tag": "node20-1.0.67",
       "file": "claude-code/Dockerfile.node20_1_0_67"
     }
   ],
@@ -82,10 +82,7 @@ For example:
 
 ```bash
 # Pull the primary tag
-docker pull ghcr.io/xshalabs/dev-image-registry/claude-code:node-18-claude-code-1.0.67
-
-# Pull the latest tag (only on the main branch)
-docker pull ghcr.io/xshalabs/dev-image-registry/claude-code:latest-node-18-claude-code-1.0.67
+docker pull ghcr.io/xshalabs/dev-image-registry/claude-code:node18-1.0.67
 ```
 
 ## Permissions
