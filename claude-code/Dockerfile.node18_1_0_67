@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y git bash && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-RUN npm install -g yarn pnpm @anthropic-ai/claude-code@1.0.67
+RUN npm install -g pnpm @anthropic-ai/claude-code@1.0.67
 
 RUN useradd -m xsha
 
