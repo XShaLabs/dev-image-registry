@@ -1,0 +1,138 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  read-registry:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has-images: ${{ steps.set-matrix.outputs.has-images }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Read registry.json and set matrix
+        id: set-matrix
+        run: |
+          # Read registry.json file
+          if [ ! -f "registry.json" ]; then
+            echo "registry.json not found"
+            echo "has-images=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Extract waiting array
+          waiting_array=$(jq -c '.waiting' registry.json)
+          
+          # Check if waiting array is empty
+          if [ "$waiting_array" == "[]" ] || [ "$waiting_array" == "null" ]; then
+            echo "No images to build"
+            echo "has-images=false" >> $GITHUB_OUTPUT
+          else
+            echo "has-images=true" >> $GITHUB_OUTPUT
+            echo "matrix=$waiting_array" >> $GITHUB_OUTPUT
+            echo "Images to build: $waiting_array"
+          fi
+
+  build-and-push:
+    needs: read-registry
+    if: needs.read-registry.outputs.has-images == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.read-registry.outputs.matrix) }}
+    
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.image.name }}
+          tags: |
+            type=raw,value=${{ matrix.image.tag }}
+            type=ref,event=branch,suffix=-${{ matrix.image.tag }}
+            type=ref,event=pr,suffix=-${{ matrix.image.tag }}
+            type=sha,prefix={{branch}}-${{ matrix.image.tag }}-
+            type=raw,value=latest,enable={{is_default_branch}},suffix=-${{ matrix.image.tag }}
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.image.file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Output image details
+        run: |
+          echo "✅ Successfully built and pushed image: ${{ matrix.image.name }}"
+          echo "🏷️ Primary tag: ${{ matrix.image.tag }}"
+          echo "📁 Dockerfile: ${{ matrix.image.file }}"
+          echo "🔗 All tags: ${{ steps.meta.outputs.tags }}"
+
+  update-registry:
+    needs: [read-registry, build-and-push]
+    if: needs.read-registry.outputs.has-images == 'true' && success()
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update registry.json
+        run: |
+          # Read current registry.json
+          current_waiting=$(jq -c '.waiting' registry.json)
+          current_completed=$(jq -c '.completed' registry.json)
+          
+          # Move waiting items to completed
+          new_completed=$(echo "$current_waiting $current_completed" | jq -s 'add')
+          
+          # Clear waiting array and update completed array
+          jq --argjson completed "$new_completed" '.waiting = [] | .completed = $completed' registry.json > registry_tmp.json
+          mv registry_tmp.json registry.json
+          
+          echo "Updated registry.json:"
+          cat registry.json
+      
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add registry.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update registry.json after successful image builds"
+            git push
+          fi

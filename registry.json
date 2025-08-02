@@ -1,0 +1,15 @@
+{
+    "waiting": [
+        {
+            "name": "claude-code",
+            "tag": "node-18-claude-code-1.0.67",
+            "file": "claude-code/Dockerfile.node18_1_0_67"
+        },
+        {
+            "name": "claude-code",
+            "tag": "node-20-claude-code-1.0.67",
+            "file": "claude-code/Dockerfile.node20_1_0_67"
+        }
+    ],
+    "completed": []
+}
