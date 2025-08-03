@@ -1,15 +1,15 @@
 {
-  "waiting": [],
-  "completed": [
-    {
-      "name": "claude-code",
-      "tag": "node18-1.0.67",
-      "file": "claude-code/Dockerfile.node18_1_0_67"
-    },
-    {
-      "name": "claude-code",
-      "tag": "node20-1.0.67",
-      "file": "claude-code/Dockerfile.node20_1_0_67"
-    }
-  ]
+    "waiting": [
+        {
+            "name": "claude-code",
+            "tag": "node18-1.0.67",
+            "file": "claude-code/Dockerfile.node18_1_0_67"
+        },
+        {
+            "name": "claude-code",
+            "tag": "node20-1.0.67",
+            "file": "claude-code/Dockerfile.node20_1_0_67"
+        }
+    ],
+    "completed": []
 }
