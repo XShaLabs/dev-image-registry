@@ -1,6 +1,6 @@
 FROM node:18
 
-RUN apt-get update && apt-get install -y git bash && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git bash sudo && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -8,6 +8,12 @@ RUN npm install -g pnpm @anthropic-ai/claude-code@1.0.67
 
 RUN groupadd -g 1001 -r xsha && \
     useradd -u 1001 -r -m -g xsha xsha && \
-    chown -R xsha:xsha /app
+    chown -R xsha:xsha /app 
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chown xsha:xsha /usr/local/bin/entrypoint.sh
 
 USER xsha
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
