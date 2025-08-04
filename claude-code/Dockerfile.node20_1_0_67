@@ -11,8 +11,7 @@ RUN groupadd -g 1001 -r xsha && \
     chown -R xsha:xsha /app
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-RUN chown xsha:xsha /usr/local/bin/entrypoint.sh
+RUN chown xsha:xsha /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
 
 USER xsha
 
