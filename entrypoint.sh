@@ -48,14 +48,13 @@ if [ -z "$COMMAND" ]; then
     exit 1
 fi
 
-# Copy files from specified directory to /home/xsha if directory parameter is provided
+# Copy .claude* files from specified directory to /home/xsha if directory parameter is provided
 if [ -n "$DIRECTORY" ]; then
     # Ensure the source directory exists
     if [ -d "$DIRECTORY" ]; then
-        # Copy all files (including hidden files) from source directory to /home/xsha
-        # Using cp -rf to recursively copy and force overwrite existing files
-        cp -rf "$DIRECTORY"/. "/home/xsha"/
-        echo "Copied files from $DIRECTORY to /home/xsha"
+        # Copy only .claude* files and directories, preserving directory structure
+        (cd "$DIRECTORY" && find . -name ".claude*" | tar -cf - -T - | tar -xf - -C "/home/xsha")
+        echo "Copied .claude* files from $DIRECTORY to /home/xsha"
     else
         echo "Warning: Directory $DIRECTORY does not exist, skipping copy operation"
     fi
@@ -64,11 +63,10 @@ fi
 # Add the command parameter and execute
 $COMMAND
 
-# Copy files from /home/xsha to specified directory if provided
+# Copy .claude* files from /home/xsha to specified directory if provided
 if [ -n "$DIRECTORY" ]; then    
-    # Copy all files (including hidden files) from /home/xsha to target directory
-    # Using cp -rf to recursively copy and force overwrite existing files
+    # Copy only .claude* files and directories back to target directory, preserving directory structure
     if [ -d "/home/xsha" ]; then
-        cp -rf /home/xsha/. "$DIRECTORY"/
+        (cd "/home/xsha" && find . -name ".claude*" | tar -cf - -T - | tar -xf - -C "$DIRECTORY")
     fi
 fi
