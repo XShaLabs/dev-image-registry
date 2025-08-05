@@ -1,6 +1,5 @@
 {
-  "waiting": [],
-  "completed": [
+  "waiting": [
     {
       "name": "claude-code",
       "tag": "node18-1.0.67",
@@ -11,5 +10,6 @@
       "tag": "node20-1.0.67",
       "file": "claude-code/Dockerfile.node20_1_0_67"
     }
-  ]
+  ],
+  "completed": []
 }

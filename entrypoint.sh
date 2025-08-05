@@ -61,7 +61,7 @@ if [ -n "$DIRECTORY" ]; then
 fi
 
 # Add the command parameter and execute
-$COMMAND
+eval "$COMMAND"
 
 # Copy .claude* files from /home/xsha to specified directory if provided
 if [ -n "$DIRECTORY" ]; then    
