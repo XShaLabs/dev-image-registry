@@ -62,7 +62,7 @@ if [ -n "$DIRECTORY" ]; then
 fi
 
 # Add the command parameter and execute
-exec $COMMAND
+$COMMAND
 
 # Copy files from /home/xsha to specified directory if provided
 if [ -n "$DIRECTORY" ]; then    
