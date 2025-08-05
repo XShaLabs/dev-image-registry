@@ -48,10 +48,27 @@ if [ -z "$COMMAND" ]; then
     exit 1
 fi
 
-# Execute claude command with optional directory change
+# Copy files from specified directory to /home/xsha if directory parameter is provided
 if [ -n "$DIRECTORY" ]; then
-    usermod -d "$DIRECTORY" xsha
+    # Ensure the source directory exists
+    if [ -d "$DIRECTORY" ]; then
+        # Copy all files (including hidden files) from source directory to /home/xsha
+        # Using cp -rf to recursively copy and force overwrite existing files
+        cp -rf "$DIRECTORY"/. "/home/xsha"/
+        echo "Copied files from $DIRECTORY to /home/xsha"
+    else
+        echo "Warning: Directory $DIRECTORY does not exist, skipping copy operation"
+    fi
 fi
 
 # Add the command parameter and execute
 exec $COMMAND
+
+# Copy files from /home/xsha to specified directory if provided
+if [ -n "$DIRECTORY" ]; then    
+    # Copy all files (including hidden files) from /home/xsha to target directory
+    # Using cp -rf to recursively copy and force overwrite existing files
+    if [ -d "/home/xsha" ]; then
+        cp -rf /home/xsha/. "$DIRECTORY"/
+    fi
+fi
